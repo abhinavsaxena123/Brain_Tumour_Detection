@@ -3,7 +3,6 @@ from PIL import Image
 from keras.models import load_model
 import numpy as np
 
-
 model = load_model('BrainTumor10Epochs.h5')
 
 image = cv2.imread('pred\pred0.jpg')
@@ -17,9 +16,3 @@ input_img = np.expand_dims(img, axis=0)
 result = model.predict(input_img)
 predicted_class = np.argmax(result, axis=-1)
 print(predicted_class)
-
-
-
-
-
-

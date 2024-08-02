@@ -14,6 +14,7 @@ image_directory = 'datasets/'
 
 no_tumour_images =  os.listdir(image_directory+ 'no/')
 yes_tumour_images =  os.listdir(image_directory+ 'yes/')
+# sets a standard size (64x64 pixels) for input images.
 INPUT_SIZE=64
 dataset=[]
 label=[]
@@ -26,7 +27,7 @@ for i,image_name in enumerate(no_tumour_images):
     if(image_name.split('.')[1]=='jpg'):
         image = cv2.imread(image_directory+'no/'+image_name)
         image = Image.fromarray(image, 'RGB')
-        image=image.resize((64,64))
+        image=image.resize((64,64))  #resizes the PIL Image object to a standard size
         dataset.append(np.array(image))
         label.append(0)
 
@@ -46,28 +47,37 @@ x_train,x_test,y_train,y_test = train_test_split(dataset,label,test_size=0.2,ran
 #print(x_train.shape)  (2400,64,64,3)
 #print(x_test.shape) #(600,64,64,3)
 
+# each label in y_train will be represented as an array of size 2,
 y_train = to_categorical(y_train, num_classes=2)
 y_test = to_categorical(y_test, num_classes=2)
 
 #Model Building
+# initializes a Keras Sequential model.
 model = Sequential()
 
+#First Convolutional Layer:
 model.add(Conv2D(32, (3,3), input_shape=(INPUT_SIZE,INPUT_SIZE,3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
+#Second Convolutional Layer:
 model.add(Conv2D(32, (3,3), kernel_initializer='he_uniform'))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
+#Third Convolutional Layer:
 model.add(Conv2D(64, (3,3),  kernel_initializer='he_uniform'))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
+#3D OUTPUT VECTOR ----> 1D OUTPUT VECTOR
 model.add(Flatten())
+
 model.add(Dense(64))
 model.add(Activation('relu'))
 model.add(Dropout(0.5))
+
+#OUTPUT LAYER--
 model.add(Dense(2))
 model.add(Activation('sigmoid'))
 
@@ -79,7 +89,7 @@ validation_data=(x_test,y_test),
 shuffle=False
 )
 
-model.save('BrainTumor10EpochsCategorical.h5')
+model.save('BrainTumor10Epochs.h5')
 
 
 
